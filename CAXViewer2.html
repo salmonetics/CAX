@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>CAX Viewer</title>
+
+    <meta charset="UTF-8">
+	
+	<link rel="stylesheet" type="text/css" href="/script/dc.js/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/script/dc.js/dc.css"/>
+	<script src="/script/jquery-1.12.2.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>	
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+	<style>
+#dataview{
+	height: 100px;
+	width: 400px;
+	overflow: auto;
+	margin-left: 50px;
+	margin-bottom: 100px;
+}
+#esu_label{
+	text-align: center;
+	font: 12px sans-serif;
+}	
+.poplabel{
+	margin-left: 20px;
+	margin-right: 20px;
+	text-align: center;
+	font-weight: bold;
+}
+#metaheader{
+	height: 80px;
+}	
+#metamap{
+	height: 500px;
+	top: 525px;
+	position: relative;
+}
+
+
+#cfilters{
+	position: relative;
+}
+
+#metafooter{
+	position: relative;
+	top: 410px;
+}
+	
+.area {
+  fill: url(#temperature-gradient);
+}
+
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+.curse line {
+  fill: none;
+  stroke: black;
+  stroke-width: 1px
+}
+
+.curse text, line {
+	opacity: 0.5;
+}
+
+.line2 {
+  stroke: black;
+  stroke-width: 4px;
+  fill: black;
+}
+	.control {margin:5px;}
+	#spawn{
+	  overflow: hidden;
+	}
+	#hatch{
+	  overflow: hidden;
+	}	
+	#agec{
+	  overflow: hidden;
+	}
+	#meta{
+	  overflow: hidden;
+	}	
+	#divmap {
+      width:500px;
+      height:400px;
+	  background-image: url(river_background.jpg);
+    }
+	#filters {
+		border-right-style: solid;
+		border-width: 2px;
+		border-color: #cccccc;
+	}
+	
+	g.tick text{
+		cursor: pointer;
+	}
+	
+	g.z {
+		font-size: 11px;
+	}
+	
+	.map {
+      width:600px;
+      height:400px;
+    }
+	
+	#obsmap {
+		height: 600px;
+		width: 800px;
+	}
+	
+	#datarow {
+		height: 300px;
+		overflow: scroll;
+	}
+	.river path{
+				fill: none;
+				stroke: #0570b0;
+				stroke-width: 2;
+			}
+	.borders path{
+				fill: none;
+				stroke: black;
+			}
+	#spinner * { 
+		filter: none; 
+		-moz-opacity: 100%; 
+		position: absolute;
+		top: 200px;
+		left: 650px;
+		}
+		
+div.tooltip {   
+  position: absolute;           
+  text-align: left;                            
+  padding: 2px;             
+  font: 16px sans-serif;        
+  background: #ccc;   
+  border: 0px;      
+  border-radius: 8px;           
+  pointer-events: none;         
+}
+svg	{ overflow: hidden; }
+	
+	table {
+	margin: 10px;
+	padding-top: 2px;
+    padding-right: 10px;
+    padding-bottom: 2px;
+    padding-left: 10px;
+	}
+	
+.dc-table-label {
+font-weight: bold;
+}
+
+.header th {
+text-align: center;	
+}
+
+.span14{
+	margin-top: 25px;
+}
+
+.tiptable {
+	font: 12px sans-serif;
+}
+
+.axis path, .axis line {
+    fill: none;
+    shape-rendering: crispedges;
+    stroke: #000000;
+}
+.grid .tick {
+    stroke: grey;
+    opacity: 0.5 !important;
+}
+.bar rect {
+        fill: #ed1e79;
+    }
+
+    .bar text.value {
+        fill: black;
+    }
+    circle {
+    fill: none;
+    stroke: black; 
+    stroke-width: 1;
+}
+
+.legend text{
+	font: 12px sans-serif;
+}
+
+.checkbox-dropdown {
+    width: 100px;
+    border: 1px solid silver;
+    cursor: pointer; /* use correct mouse pointer when hovering over the dropdown */
+    padding: 1px;
+    position: relative;
+    margin: 0 auto;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Display CSS arrow to the right of the dropdown text */
+.checkbox-dropdown:after {
+    content:'';
+    height: 0;
+    position: relative;
+    width: 0;
+    border: 6px solid transparent;
+    border-top-color: #000;
+    top: 0px;
+    right: 0px;
+
+    content: "";
+    width: 0;
+    height: 0;
+    position: absolute;
+    right: -15px;
+    top: 50%;
+    margin-top: -6px;
+    border-width: 6px 0 6px 6px;
+    border-style: solid;
+    border: 6px solid transparent;
+    border-top-color: #000; 	
+}
+
+/* Reverse the CSS arrow when the dropdown is active */
+.checkbox-dropdown.is-active:after {
+    border-bottom-color: #000;
+    border-top-color: #fff;
+    margin-top: -9px;
+}
+
+.checkbox-dropdown-list {
+	background-color: aliceblue;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 100%; /* align the dropdown right below the dropdown text */
+    border: inherit;
+    border-top: none;
+    left: -1px; /* align the dropdown to the left */
+    right: -1px; /* align the dropdown to the right */
+    opacity: 0; /* hide the dropdown */
+    -webkit-transition: opacity 0.1s ease-in-out;
+    -moz-transition: opacity 0.1s ease-in-out;
+    -o-transition: opacity 0.1s ease-in-out;
+    -ms-transition: opacity 0.1s ease-in-out;
+    transition: opacity 0.1s ease-in-out;
+    pointer-events: none; /* avoid mouse click events inside the dropdown */
+}
+.is-active .checkbox-dropdown-list {
+    opacity: 1; /* display the dropdown */
+    pointer-events: auto; /* make sure that the user still can select checkboxes */
+}
+
+.checkbox-dropdown-list li label {
+    display: block;
+	margin-top: 5px;
+    border-bottom: 1px solid silver;
+    padding: 0px;
+    -webkit-transition: all 0.2s ease-out;
+    -moz-transition: all 0.2s ease-out;
+    -o-transition: all 0.2s ease-out;
+    -ms-transition: all 0.2s ease-out;
+    transition: all 0.2s ease-out;
+}
+
+.checkbox-dropdown-list li label:hover {
+
+}
+	</style>
+<script>
+var options = [];
+
+$( '.dropdown-menu a' ).on( 'click', function( event ) {
+	console.log("OK")
+   var $target = $( event.currentTarget ),
+       val = $target.attr( 'data-value' ),
+       $inp = $target.find( 'input' ),
+       idx;
+
+   if ( ( idx = options.indexOf( val ) ) > -1 ) {
+      options.splice( idx, 1 );
+      setTimeout( function() { $inp.prop( 'checked', false ) }, 0);
+   } else {
+      options.push( val );
+      setTimeout( function() { $inp.prop( 'checked', true ) }, 0);
+   }
+
+   $( event.target ).blur();
+      
+   console.log( options );
+   return false;
+});
+</script>	
+</head>
+<body>
+<div class="container-fluid">
+<div class="row">
+<div class="span16">
+<h2>CAX Data Browser</h2>
+<span>Rows: <span id="filtered_fish"></span> of <span id="total_fish"></span></span>&nbsp;
+
+
+</div>
+</div>
+<div class="row">
+<div class="span16">
+<div class="row">
+<div class="span5" id="filters">
+  <ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#filter1">Species/ESU</a></li>
+    <li><a data-toggle="tab" href="#filter2">MPG/Pop/Run</a></li>
+	<li><a data-toggle="tab" href="#about">About</a></li>
+	<li><a data-toggle="tab" href="#help">Help</a></li>
+  </ul>
+
+<div class="tab-content">
+
+    <div id="filter1" class="tab-pane fade in active">
+	    <fieldset>
+        <strong>Select Species</strong>       
+        <p>
+            <input type="radio" name="specie" value="Chinook" checked onclick="selectSpecies('Chinook');"/> Chinook<br/>
+            <input type="radio" name="specie" value="Chum" onclick="selectSpecies('Chum');"/> Chum<br/>
+            <input type="radio" name="specie" value="Coho" onclick="selectSpecies('Coho');"/> Coho<br/>
+            <input type="radio" name="specie" value="Steelhead" onclick="selectSpecies('Steelhead');"/> Steelhead<br/>
+			<input type="radio" name="specie" value="All" onclick="selectSpecies('All');"/> Show All<br/>
+        </p>
+    </fieldset>
+	<!--
+		<div id="pie-species" class="control">
+			<div><strong>Species</strong>
+			<a class="reset" href="javascript:species.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+			</div>
+		</div>
+	-->
+		<div id="pie-esu" class="control">
+			<div><strong>ESU</strong>
+			<a class="reset" href="javascript:esu.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+			</div>
+			
+		</div>
+		<div id="metamap">
+		<div id = "esu_label">Number of Populations</div>
+		</div>
+
+	</div>
+
+    <div id="filter2" class="tab-pane fade">
+		<div id="pie-mpop" class="control">
+			<div><strong>Major Population Group</strong>
+			<a class="reset" href="javascript:mpop.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+			</div>
+		</div>
+		
+		<div id="pie-pop" class="control">
+			<div><strong>Population</strong>
+			<a class="reset" href="javascript:pop.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+			</div>
+		</div>	
+		<div id="pie-rrun" class="control">
+			<div><strong>Run</strong>
+			<a class="reset" href="javascript:rrun.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+			</div>
+		</div>			
+		<div class="control">
+			<div><strong>Current Cohort</strong> 
+			</div>
+			<div  class="current_filters">
+			<table cellpadding='3'><tr>
+			<th align='left' valign='top'>Species</th><td align='left'>Chinook</td></tr>
+			</table>
+			</div>
+		</div>			
+	</div>
+	
+	<div id="about" class="tab-pane fade">
+	<div id="about-tab" class="control">
+		<b>CAX downloaded: 02-08-2019</b></br>
+		<b>Data Source and Use Agreement</b>
+		<p>This tool provides visualization of salmonid adult and juvenile abundance estimates as provided by multiple federal, state, and tribal entities through the <a href="http://www.streamnet.org/data/coordinated-assessments/" target="_new">PNAMP Coordinated Assessments Project</a>. The most current data can be downloaded from <a href="http://cax.streamnet.org/" target="_new">here</a>. A Use Agreement and Disclaimer for this dataset can be downloaded <a href="http://www.streamnet.org/wp-content/uploads/2016/05/20160528-Data-Sharing-Agreement-and-Policy.pdf" target="_new">here</a>.</p>	
+		<p>
+		<b>Contact</b><br>
+		The CAX Data Browser is still in development and we welcome your feedback. Please send comments to:<br><a href="mailto://brianm@salmonetics.com">Brian Maschhoff</a>.
+		</p>
+		<p>Support for development was provided by the Bonneville Power Administration.
+		<p>
+		<img src="logos.jpg" usemap="#logomap">
+
+		<map name="logomap">
+			<area shape="rect" coords="0,0,118,100" href="http://www.bpa.gov" alt="Bonneville Power Administration" target="_new">
+			<area shape="rect" coords="119,0,275,100" href="http://www.salmonetics.com" alt="Salmonetics" target="_new">
+			<area shape="rect" coords="275,0,434,100" href="http://www.hinrichsenenvironmental.com" alt="Hinrichsen Environmental" target="_new">
+		</map>
+		</p>
+	</div>
+	</div>	
+	<div id="help" class="tab-pane fade">
+	<div id="help-tab" class="control">
+		<p>
+		<b>Browser Requirements</b>
+		<ol>
+			<li>A reasonably recent browser (Chrome, IE, Firefox, Opera, Safari)</li>
+			<li>At least 1280 horizontal pixels in browser window. Decrease magnification if necessary</li>
+		</ol>
+		
+		</p>
+		<p>
+		<b>Usage Hints</b>
+		<ol>
+			<li>On the data pane at left, clicking within one of the lightly shaded areas (corresponding to an MGP) filters the populations down to that MPG. Clicking again within that area (or the Back icon) restores the previous.</li>
+			<li>Clicking on the name of the population displays its data all by itself.</li>
+			<li>You can restrict the populations to one or more ESUs by clicking on the associated bars in the ESU row chart on the left.</li>
+			<li>You can restrict the time window by clicking and dragging your mouse across the year labels on the x-axis. The span will shade gray as you do this, but you need to release the click within that axis (and not somewhere else on the screen). Not perfect, but it works for now. Clicking on the left or right arrows which appear expands back to the original limits.</li>
+			<li>The map is for orientation purposes, so clicking on it will get you nowhere.</li>
+			<li>Grouping together one or more MPGs or run types is possible using the pie chart filters found under the Pop/Stream/Run tab (mislabeled at present) on the left pane.</li>
+			<li>The "Show" dropdown toggles between displaying only those populations for which the SPS has data and additional listed populations which may (or may not) have data in the future.</li>
+			<li>The "Show All" selection in the Select Species list will indeed show all populations on one screen. It's really scary.</li>
+
+		</ol>		
+		</p>
+
+	</div>
+	</div>		
+</div>  
+
+</div>
+<div class="span18">
+  <ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#spawn">Spawner Abundance</a></li>
+	<li><a data-toggle="tab" href="#hatch">Hatch Fraction</a></li>
+    <li><a data-toggle="tab" href="#agec">Age Structure</a></li>
+	<li><a data-toggle="tab" href="#jack">Jack Fraction</a></li>	
+	<li><a data-toggle="tab" href="#juvs">Juveniles</a></li>
+
+
+  </ul>
+    <div class="tab-content">
+	<div id="spawn" class="tab-pane fade in active">
+	<div class="row">
+	<span class="poplabel">Show: <select onChange="toggleEmpty(this)" class="showEmptyPops"><option value="0">Populations With Data</option><option value="1">Potential Populations</option></select></span>
+	<input type="checkbox" id="norm_spawn" onchange="toggleSpawn()" checked>&nbsp;<span id="normalize_label">Full Scale</span>&nbsp;&nbsp;&nbsp;<input type="checkbox" id="wild_only" onchange="toggleWild()">&nbsp;Wild Only&nbsp;&nbsp;&nbsp;<input type="checkbox" id="no_jacks" onchange="toggleJacks()">&nbsp;No Jacks&nbsp;&nbsp;&nbsp;<!--<input type="checkbox" id="show_thresh" onchange="toggleThresh()" checked>&nbsp;Show Thresholds&nbsp;&nbsp;&nbsp;<input type="checkbox" id="show_geomean" onchange="toggleGeomean()" checked>&nbsp;Show Geomean -->
+	<!--
+    <span class="checkbox-dropdown">Overlays&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <ul class="checkbox-dropdown-list">
+            <li>
+                <label id="geomean_label">
+					<input type="checkbox" id="show_geomean" onchange="toggleGeomean()" checked/>&nbsp;Geomean10</label></li>	
+            <li>
+                <label id="geomean5_label">
+					<input type="checkbox" id="show_geomean5" onchange="toggleGeomean5()"/>&nbsp;Geomean5</label></li>						
+            <li>
+                <label id="mat_label">
+					<input type="checkbox" id="show_MAT" onchange="toggleMAT()" checked/>&nbsp;MAT</label></li>  
+            <li>
+                <label id="cat_label">
+					<input type="checkbox" id="show_CAT" onchange="toggleCAT()"/>&nbsp;CT</label></li> 
+			
+			<li>
+                <label id="delist3_label">
+					<input type="checkbox" id="show_delist3" onchange="toggleDelist3()"/>&nbsp;DATLR</label></li>
+        </ul>
+    </span>-->
+	</div>
+	<!--end row -->
+	<div id="spawnplot"></div>
+	<div id="metadiv"></div>
+	</div>
+
+	<div id="hatch" class="tab-pane fade">
+	<span class="poplabel">Show: <select onChange="toggleEmpty(this)" class="showEmptyPops"><option value="0">Populations With Data</option><option value="1">Potential Populations</option></select></span>
+	<div id="hatchplot"></div>
+	
+	</div>	
+	
+	<div id="agec" class="tab-pane fade">
+	<span class="poplabel">Show: <select onChange="toggleEmpty(this)" class="showEmptyPops"><option value="0">Populations With Data</option><option value="1">Potential Populations</option></select></span>
+	<div id="ageplot"></div>
+	</div>
+
+	<div id="jack" class="tab-pane fade">
+	<span class="poplabel">Show: <select onChange="toggleEmpty(this)" class="showEmptyPops"><option value="0">Populations With Data</option><option value="1">Potential Populations</option></select></span>
+	<div id="jackplot"></div>
+	</div>	
+
+	<div id="juvs" class="tab-pane fade">
+	<span class="poplabel">Show: <select onChange="toggleEmpty(this)" class="showEmptyPops"><option value="0">Populations With Data</option><option value="1">Potential Populations</option></select></span>
+	<div id="juvplot"></div>
+	</div>	
+	
+	</div>
+
+
+	
+	</div>
+
+	</div>
+</div>
+</div>
+
+</div>
+<div class="row">
+<div id="dataview"/>
+</div>
+</div>
+<div id="spinner"><img src="/images/spinner.gif"></div>
+<div id="divmap1" style="background-color:white;"></div>
+<script>
+var datafile = "https://salmonetics.github.io/CAX/data/cax_02-08-2019.csv";
+var metafile = "https://salmonetics.github.io/CAX/data/ca-metadata_02-08-2019.csv";
+</script>
+</body>
+<script type="text/javascript" src="/script/dc.js/d3.js"></script>
+<script src="//d3js.org/topojson.v1.min.js"></script>
+<script type="text/javascript" src="/script/dc.js/crossfilter.js"></script>
+<script type="text/javascript" src="/script/dc.js/dc.js.2.min.js"></script>
+<script type="text/javascript" src="/script/dc.js/colorbrewer.js"></script>
+
+<script type="text/javascript" src="CAXViewer2.js"></script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-18774702-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</html>
